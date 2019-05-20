@@ -6,15 +6,14 @@ import android.net.NetworkInfo
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.google.gson.Gson
+import java.io.File
 
+// https://github.com/cbeust/klaxon
 class MainActivity : AppCompatActivity() {
     private var offlineMode = false
-
-    private val dataJSON = ArrayList<UserData>()
+    private val jsonFile = File("jsonData.json")
     val RESTUrl = "https://reqres.in/api/users?per_page=10"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,36 +32,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getJSON() {
-        RESTUrl.httpGet().responseObject(UserData.Deserializer()) { request, response, result ->
-            val (data, err) = result
-
-            data?.forEach { UserData ->
-                dataJSON.add(UserData)
-            }
-
+        RESTUrl.httpGet().responseString() { request, response, result ->
             when (result) {
                 is Result.Failure -> {
                     Toast.makeText(this, "Fehler beim Abruf", Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
+                    jsonFile.writeText(result.value)
 
                 }
             }
         }
     }
 
-    data class UserData(
-        val id: Int,
-        val email: String,
-        val first_name: String,
-        val last_name: String,
-        val avatar: String
-    ) {
+    data class User(
+        val page: Int,
+        val per_page: Int,
+        val total: Int,
+        val total_pages: Int,
+        val dada: List<UserData>) {
 
-        class Deserializer : ResponseDeserializable<Array<UserData>> {
-            override fun deserialize(content: String): Array<UserData>? =
-                Gson().fromJson(content, Array<UserData>::class.java)
-        }
+        data class UserData(
+            val id: Int,
+            val email: String,
+            val first_name: String,
+            val last_name: String,
+            val avatar: String
+        )
     }
 }
 
