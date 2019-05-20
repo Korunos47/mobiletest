@@ -6,21 +6,31 @@ import android.net.NetworkInfo
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.beust.klaxon.JsonObject
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import com.beust.klaxon.Parser
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.lang.StringBuilder
 
 // https://github.com/cbeust/klaxon
 class MainActivity : AppCompatActivity() {
     private var offlineMode = false
-    private val jsonFile = File("jsonData.json")
+    private lateinit var jsonDirectory: File
+
     val RESTUrl = "https://reqres.in/api/users?per_page=10"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        initialization()
         checkInternetConnection()
+    }
+
+    private fun initialization() {
+        jsonDirectory = File(filesDir,"JSONData")
     }
 
     private fun checkInternetConnection() {
@@ -38,10 +48,42 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Fehler beim Abruf", Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
-                    jsonFile.writeText(result.value)
-
+                    if (jsonDirectory.exists()){
+                        writeJSONFile(result.value)
+                    } else { // Create directory
+                        jsonDirectory.mkdirs()
+                        writeJSONFile(result.value)
+                    }
                 }
             }
+        }
+        workwithjson()
+    }
+
+    private fun workwithjson() {
+        val filename = File(jsonDirectory.path,"/jsonData.json")
+        val inputAsString = FileInputStream(filename).bufferedReader().use { it.readText() }
+
+        val parser: Parser = Parser.default()
+        val stringBuilder = StringBuilder(inputAsString)
+        val json: JsonObject = parser.parse(stringBuilder) as JsonObject
+        println("Name: ${json.string("page")}")
+
+
+        val obj = parse(jsonDirectory.path + "/jsonData.json") as JsonObject
+        print(obj.map)
+    }
+
+    private fun writeJSONFile(data: String){
+        val file = File(jsonDirectory, "/jsonData.json")
+        FileOutputStream(file).use {
+            it.write(data.toByteArray())
+        }
+    }
+    fun parse(name: String) : Any? {
+        val cls = Parser::class.java
+        return cls.getResourceAsStream(name)?.let { inputStream ->
+            return Parser.default().parse(inputStream)
         }
     }
 
@@ -50,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         val per_page: Int,
         val total: Int,
         val total_pages: Int,
-        val dada: List<UserData>) {
+        val userData: List<Any>) {
 
         data class UserData(
             val id: Int,
