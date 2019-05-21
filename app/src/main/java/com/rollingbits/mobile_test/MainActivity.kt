@@ -3,22 +3,21 @@ package com.rollingbits.mobile_test
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
+import com.beust.klaxon.Parser
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.beust.klaxon.Parser
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.lang.StringBuilder
 
 // https://github.com/cbeust/klaxon
 class MainActivity : AppCompatActivity() {
     private var offlineMode = false
+    private var userData: UserData.User? = null
     private lateinit var jsonDirectory: File
 
     val RESTUrl = "https://reqres.in/api/users?per_page=10"
@@ -28,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initialization()
         checkInternetConnection()
+        initializeJSONObject(readJSONFile("jsonData"))
     }
 
     private fun initialization() {
@@ -58,24 +58,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        workwithjson()
     }
 
-    private fun workwithjson() {
-        val filename = File(jsonDirectory.path, "/jsonData.json")
-        val inputAsString = FileInputStream(filename).bufferedReader().use { it.readText() }
-
-        /*
-        val parser: Parser = Parser.default()
-        val stringBuilder = StringBuilder(inputAsString)
-        val json: JsonObject = parser.parse(stringBuilder) as JsonObject
-        println("Name: ${json.string("page")}")
-        */
-
-        //val obj = parse(jsonDirectory.path + "/jsonData.json") as JsonObject
-
-        val result = Klaxon().parse<User>(inputAsString)
-        print(result)
+    private fun initializeJSONObject(jsonString: String) {
+        userData = Klaxon().parse<UserData.User>(jsonString)
     }
 
     private fun writeJSONFile(data: String) {
@@ -85,28 +71,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun readJSONFile(filename: String): String{
+        val filename = File(jsonDirectory.path, "/" + filename + ".json")
+        return FileInputStream(filename).bufferedReader().use { it.readText() }
+    }
+
     fun parse(name: String): Any? {
         val cls = Parser::class.java
         return cls.getResourceAsStream(name)?.let { inputStream ->
             return Parser.default().parse(inputStream)
         }
     }
-
-    data class User(
-        val page: Int,
-        val per_page: Int,
-        val total: Int,
-        val total_pages: Int,
-        val data: List<UserData>
-    )
-
-    data class UserData(
-        val id: Int,
-        val email: String,
-        val first_name: String,
-        val last_name: String,
-        val avatar: String
-    )
 
 }
 
