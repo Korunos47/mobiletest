@@ -14,7 +14,8 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-// https://github.com/cbeust/klaxon
+// https://medium.com/@froger_mcs/inject-everything-viewholder-and-dagger-2-e1551a76a908
+// https://medium.com/@hinchman_amanda/working-with-recyclerview-in-android-kotlin-84a62aef94ec
 class MainActivity : AppCompatActivity() {
     private var offlineMode = false
     private var userData: UserData.User? = null
