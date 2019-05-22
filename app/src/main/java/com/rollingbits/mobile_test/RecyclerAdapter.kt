@@ -3,6 +3,8 @@ package com.rollingbits.mobile_test
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 
+// https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
+// https://www.raywenderlich.com/1560485-android-recyclerview-tutorial-with-kotlin
 class RecyclerAdapter: RecyclerView.Adapter<RecyclerView.UserHolder>() {
     private lateinit var userData: UserData
 
