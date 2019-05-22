@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">mobile-test</string>
+    <string name="userAvatar">userAvatar</string>
+    <string name="firstnameExample">Max</string>
+    <string name="lastnameExample">Mustermann</string>
+    <string name="emailExample">max.mustermann@test.de</string>
 </resources>

@@ -1,7 +1,7 @@
 package com.rollingbits.mobile_test
 
 class UserData {
-    data class User(
+    data class UserHeader(
         val page: Int,
         val per_page: Int,
         val total: Int,
