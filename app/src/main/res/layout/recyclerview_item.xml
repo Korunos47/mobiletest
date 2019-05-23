@@ -38,7 +38,7 @@
                     android:text="@string/emailExample"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" android:id="@+id/emailTV" android:layout_marginStart="10dp"
-                    android:layout_marginTop="dp"/>
+                    android:layout_marginTop="5dp"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

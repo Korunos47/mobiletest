@@ -1,25 +1,39 @@
 package com.rollingbits.mobile_test
 
 import android.support.v7.widget.RecyclerView
+import android.view.View
 import android.view.ViewGroup
 
 // https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
 // https://www.raywenderlich.com/1560485-android-recyclerview-tutorial-with-kotlin
-class RecyclerAdapter: RecyclerView.Adapter<RecyclerView.UserHolder>() {
-    private lateinit var userData: UserData
+class RecyclerAdapter(private val user: List<UserData>):
+    RecyclerView.Adapter<RecyclerAdapter.UserHolder>() {
 
-    fun RecyclerAdapter(userData: UserData){
-
+    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): UserHolder {
+        val inflatedView = p0.inflate(R.layout.recyclerview_item, false)
+        return UserHolder(inflatedView)
     }
+
     override fun getItemCount(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return user.size
     }
 
-    override fun onBindViewHolder(p0: RecyclerView.ViewHolder, p1: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onBindViewHolder(p0: UserHolder, p1: Int) {
+
     }
 
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RecyclerView.ViewHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    class UserHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener{
+        private var view: View = v
+        private var userData: UserData.UserHeader.UserData? = null
+
+        init {
+            v.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+
+        }
+
     }
 }
+
