@@ -1,4 +1,4 @@
-package com.rollingbits.mobile_test.View
+package com.rollingbits.mobile_test.view
 
 import android.support.v7.app.AppCompatActivity
 

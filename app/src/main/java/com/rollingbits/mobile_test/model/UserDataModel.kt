@@ -1,4 +1,4 @@
-package com.rollingbits.mobile_test.Model
+package com.rollingbits.mobile_test.model
 
 import java.io.Serializable
 
@@ -10,7 +10,7 @@ class UserDataModel: Serializable{
         val total: Int,
         val total_pages: Int,
         val data: List<UserData>
-    )
+    ){
 
     data class UserData(
         val id: Int,
@@ -18,5 +18,5 @@ class UserDataModel: Serializable{
         val first_name: String,
         val last_name: String,
         val avatar: String)
-
+    }
 }

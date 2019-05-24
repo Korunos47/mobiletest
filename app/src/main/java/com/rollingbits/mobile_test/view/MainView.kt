@@ -1,4 +1,4 @@
-package com.rollingbits.mobile_test.View
+package com.rollingbits.mobile_test.view
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -12,20 +12,20 @@ import com.beust.klaxon.Parser
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.rollingbits.mobile_test.R
-import com.rollingbits.mobile_test.Model.UserDataModel
+import com.rollingbits.mobile_test.controller.RecyclerAdapter
+import com.rollingbits.mobile_test.model.UserDataModel
 import kotlinx.android.synthetic.main.activity_main.*
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
 // https://medium.com/@froger_mcs/inject-everything-viewholder-and-dagger-2-e1551a76a908
 // https://medium.com/@hinchman_amanda/working-with-recyclerview-in-android-kotlin-84a62aef94ec
-class MainView : AppCompatActivity(),KodeinAware {
+class MainView : AppCompatActivity() {
     private var offlineMode = false
     private var userData: UserDataModel.UserHeader? = null
     private lateinit var jsonDirectory: File
+    private lateinit var adapter: RecyclerAdapter
 
     private lateinit var linearLayoutManager: LinearLayoutManager
 
@@ -41,14 +41,19 @@ class MainView : AppCompatActivity(),KodeinAware {
         linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
 
+        adapter = RecyclerAdapter(userData!!.data)
+        recyclerView.adapter = adapter
     }
 
+    override fun onStart() {
+        super.onStart()
+        if(userData!!.data.isEmpty()){
+            initializeJSONObject(readJSONFile("jsonData"))
+        }
+    }
     private fun initialization() {
         jsonDirectory = File(filesDir, "JSONData")
     }
-
-    override val kodein: Kodein
-        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     private fun checkInternetConnection() {
         val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

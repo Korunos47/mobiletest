@@ -1,13 +1,14 @@
-package com.rollingbits.mobile_test.Controller
+package com.rollingbits.mobile_test.controller
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.irozon.mural.extension.source
 import com.rollingbits.mobile_test.R
-import com.rollingbits.mobile_test.Model.UserDataModel
-import com.rollingbits.mobile_test.Extensions.inflate
-import com.rollingbits.mobile_test.View.DetailUserView
+import com.rollingbits.mobile_test.model.UserDataModel
+import com.rollingbits.mobile_test.extensions.inflate
+import com.rollingbits.mobile_test.view.DetailUserView
 import kotlinx.android.synthetic.main.recyclerview_item.view.*
 
 // https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
@@ -40,6 +41,7 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserData>):
         override fun onClick(v: View?) {
             val context = itemView.context
             val showDetailUserIntent = Intent(context,DetailUserView::class.java)
+
             context.startActivity(showDetailUserIntent)
         }
 
@@ -49,9 +51,11 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserData>):
             view.firstNameTV.text = userData.first_name
             view.lastNameTV.text = userData.last_name
             view.emailTV.text = userData.email
-
+            view.userAvatar.source = userData.avatar
         }
 
     }
 }
+
+
 
