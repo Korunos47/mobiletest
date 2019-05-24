@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.recyclerview_item.view.*
 
 // https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
 // https://www.raywenderlich.com/1560485-android-recyclerview-tutorial-with-kotlin
-class RecyclerAdapter(private val user: List<UserDataModel.UserData>):
+class RecyclerAdapter(private val user: List<UserDataModel.UserHeader.UserData>):
     RecyclerView.Adapter<RecyclerAdapter.UserHolder>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): UserHolder {
@@ -32,7 +32,7 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserData>):
 
     class UserHolder(v: View): RecyclerView.ViewHolder(v), View.OnClickListener{
         private var view: View = v
-        private var userData: UserDataModel.UserData? = null
+        private var userData: UserDataModel.UserHeader.UserData? = null
 
         init {
             v.setOnClickListener(this)
@@ -45,7 +45,7 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserData>):
             context.startActivity(showDetailUserIntent)
         }
 
-        fun bindUser(userData: UserDataModel.UserData) {
+        fun bindUser(userData: UserDataModel.UserHeader.UserData) {
             this.userData = userData
 
             view.firstNameTV.text = userData.first_name
