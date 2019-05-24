@@ -1,4 +1,4 @@
-package com.rollingbits.mobile_test
+package com.rollingbits.mobile_test.Extensions
 
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater

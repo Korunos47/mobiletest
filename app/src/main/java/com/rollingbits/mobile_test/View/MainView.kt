@@ -1,4 +1,4 @@
-package com.rollingbits.mobile_test
+package com.rollingbits.mobile_test.View
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,16 +6,13 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.Parser
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import com.rollingbits.mobile_test.R
+import com.rollingbits.mobile_test.Model.UserDataModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -25,9 +22,9 @@ import java.io.FileOutputStream
 
 // https://medium.com/@froger_mcs/inject-everything-viewholder-and-dagger-2-e1551a76a908
 // https://medium.com/@hinchman_amanda/working-with-recyclerview-in-android-kotlin-84a62aef94ec
-class MainActivity : AppCompatActivity(),KodeinAware {
+class MainView : AppCompatActivity(),KodeinAware {
     private var offlineMode = false
-    private var userData: UserData.UserHeader? = null
+    private var userData: UserDataModel.UserHeader? = null
     private lateinit var jsonDirectory: File
 
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity(),KodeinAware {
     }
 
     private fun initializeJSONObject(jsonString: String) {
-        userData = Klaxon().parse<UserData.UserHeader>(jsonString)
+        userData = Klaxon().parse<UserDataModel.UserHeader>(jsonString)
     }
 
     private fun writeJSONFile(data: String) {
@@ -91,8 +88,8 @@ class MainActivity : AppCompatActivity(),KodeinAware {
     }
 
     private fun readJSONFile(filename: String): String{
-        val filename = File(jsonDirectory.path, "/" + filename + ".json")
-        return FileInputStream(filename).bufferedReader().use { it.readText() }
+        val filenamePath = File(jsonDirectory.path, "/" + filename + ".json")
+        return FileInputStream(filenamePath).bufferedReader().use { it.readText() }
     }
 
     fun parse(name: String): Any? {
