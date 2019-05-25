@@ -1,14 +1,17 @@
 package com.rollingbits.mobile_test.controller
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.irozon.mural.extension.source
 import com.rollingbits.mobile_test.R
 import com.rollingbits.mobile_test.model.UserDataModel
 import com.rollingbits.mobile_test.extensions.inflate
 import com.rollingbits.mobile_test.view.DetailUserView
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.recyclerview_item.view.*
 
 // https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
@@ -41,7 +44,10 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserHeader.UserData>)
         override fun onClick(v: View?) {
             val context = itemView.context
             val showDetailUserIntent = Intent(context,DetailUserView::class.java)
-
+            showDetailUserIntent.putExtra("first_name", userData!!.first_name)
+            showDetailUserIntent.putExtra("last_name", userData?.last_name)
+            showDetailUserIntent.putExtra("avatar", userData?.avatar)
+            showDetailUserIntent.putExtra("email", userData?.email)
             context.startActivity(showDetailUserIntent)
         }
 
@@ -51,9 +57,16 @@ class RecyclerAdapter(private val user: List<UserDataModel.UserHeader.UserData>)
             view.firstNameTV.text = userData.first_name
             view.lastNameTV.text = userData.last_name
             view.emailTV.text = userData.email
-            view.userAvatar.source = userData.avatar
+
+            if(checkInternetConnection(itemView.context))
+                Picasso.get().load(userData.avatar).into(view.userAvatar)
         }
 
+        private fun checkInternetConnection(context: Context): Boolean {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+            return activeNetwork?.isConnectedOrConnecting == true
+        }
     }
 }
 

@@ -14,7 +14,7 @@ import com.github.kittinunf.result.Result
 import com.rollingbits.mobile_test.R
 import com.rollingbits.mobile_test.controller.RecyclerAdapter
 import com.rollingbits.mobile_test.model.UserDataModel
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.mainview.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -33,7 +33,7 @@ class MainView : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.mainview)
         initialization()
         checkInternetConnection()
         initializeJSONObject(readJSONFile("jsonData"))
@@ -59,8 +59,25 @@ class MainView : AppCompatActivity() {
         val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
         offlineMode = activeNetwork?.isConnectedOrConnecting == true
-        if (offlineMode)
-            getJSON()
+        if (offlineMode) {
+            val file = File(jsonDirectory, "/jsonData.json")
+            if (file.exists())
+                initializeJSONObject(readJSONFile("jsonData"))
+            else
+                getJSON()
+        }
+        else
+            readExistingData()
+    }
+
+    private fun readExistingData() {
+        if (jsonDirectory.exists()){
+            val file = File(jsonDirectory, "/jsonData.json")
+            if (file.exists())
+                initializeJSONObject(readJSONFile(file.path))
+            else
+                Toast.makeText(this,"Keine Daten zum Lesen vorhanden",Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getJSON() {
@@ -96,13 +113,5 @@ class MainView : AppCompatActivity() {
         val filenamePath = File(jsonDirectory.path, "/" + filename + ".json")
         return FileInputStream(filenamePath).bufferedReader().use { it.readText() }
     }
-
-    fun parse(name: String): Any? {
-        val cls = Parser::class.java
-        return cls.getResourceAsStream(name)?.let { inputStream ->
-            return Parser.default().parse(inputStream)
-        }
-    }
-
 }
 
