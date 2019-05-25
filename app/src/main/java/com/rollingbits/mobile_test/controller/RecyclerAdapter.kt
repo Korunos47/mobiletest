@@ -14,8 +14,6 @@ import com.rollingbits.mobile_test.view.DetailUserView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.recyclerview_item.view.*
 
-// https://github.com/KingIdee/kodein-sample/tree/master/app/src/main/java/com/example/kodeinsample
-// https://www.raywenderlich.com/1560485-android-recyclerview-tutorial-with-kotlin
 class RecyclerAdapter(private val user: List<UserDataModel.UserHeader.UserData>):
     RecyclerView.Adapter<RecyclerAdapter.UserHolder>() {
 

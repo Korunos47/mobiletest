@@ -14,18 +14,11 @@ import com.rollingbits.mobile_test.R
 import com.rollingbits.mobile_test.controller.RecyclerAdapter
 import com.rollingbits.mobile_test.model.UserDataModel
 import kotlinx.android.synthetic.main.mainview.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-// https://medium.com/@froger_mcs/inject-everything-viewholder-and-dagger-2-e1551a76a908
-// https://medium.com/@hinchman_amanda/working-with-recyclerview-in-android-kotlin-84a62aef94ec
 class MainView : AppCompatActivity() {
-    private var offlineMode = false
     private var userData: UserDataModel.UserHeader? = null
     private lateinit var jsonDirectory: File
     private lateinit var adapter: RecyclerAdapter
@@ -100,6 +93,7 @@ class MainView : AppCompatActivity() {
 
         adapter = RecyclerAdapter(userData!!.data)
         recyclerView.adapter = adapter
+        adapter.notifyDataSetChanged()
     }
 
     private fun writeJSONFile(data: String) {
