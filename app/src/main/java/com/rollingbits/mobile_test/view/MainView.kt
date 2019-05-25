@@ -8,13 +8,16 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.widget.Toast
 import com.beust.klaxon.Klaxon
-import com.beust.klaxon.Parser
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.rollingbits.mobile_test.R
 import com.rollingbits.mobile_test.controller.RecyclerAdapter
 import com.rollingbits.mobile_test.model.UserDataModel
 import kotlinx.android.synthetic.main.mainview.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -35,71 +38,68 @@ class MainView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.mainview)
         initialization()
-        checkInternetConnection()
-        initializeJSONObject(readJSONFile("jsonData"))
-
-        linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
-
-        adapter = RecyclerAdapter(userData!!.data)
-        recyclerView.adapter = adapter
+        loadData()
     }
 
-    override fun onStart() {
-        super.onStart()
-        if(userData!!.data.isEmpty()){
-            initializeJSONObject(readJSONFile("jsonData"))
+    private fun loadData() {
+        if (checkInternetConnection()) {
+            val file = File(jsonDirectory, "/jsonData.json")
+            // Check if data is available from previous start
+            if (file.exists())
+                parseJsonToObject(readJSONFile("jsonData"))
+            else
+            // Get new JSON Data
+                getJSON()
+        } else {
+            // offline -> read available data
+            readExistingData()
         }
     }
+
     private fun initialization() {
         jsonDirectory = File(filesDir, "JSONData")
+        if (!jsonDirectory.exists())
+            jsonDirectory.mkdirs()
+
+        linearLayoutManager = LinearLayoutManager(applicationContext)
+        recyclerView.layoutManager = linearLayoutManager
     }
 
-    private fun checkInternetConnection() {
+    private fun checkInternetConnection(): Boolean {
         val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
-        offlineMode = activeNetwork?.isConnectedOrConnecting == true
-        if (offlineMode) {
-            val file = File(jsonDirectory, "/jsonData.json")
-            if (file.exists())
-                initializeJSONObject(readJSONFile("jsonData"))
-            else
-                getJSON()
-        }
-        else
-            readExistingData()
+        return activeNetwork?.isConnectedOrConnecting == true
     }
 
     private fun readExistingData() {
-        if (jsonDirectory.exists()){
+        if (jsonDirectory.exists()) {
             val file = File(jsonDirectory, "/jsonData.json")
             if (file.exists())
-                initializeJSONObject(readJSONFile(file.path))
+                parseJsonToObject(readJSONFile("jsonData"))
             else
-                Toast.makeText(this,"Keine Daten zum Lesen vorhanden",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Keine Daten zum Lesen vorhanden", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun getJSON() {
-        RESTUrl.httpGet().responseString() { _, _, result ->
+        RESTUrl.httpGet().responseString { _, _, result ->
             when (result) {
                 is Result.Failure -> {
                     Toast.makeText(this, "Fehler beim Abruf", Toast.LENGTH_SHORT).show()
                 }
                 is Result.Success -> {
-                    if (jsonDirectory.exists()) {
-                        writeJSONFile(result.value)
-                    } else { // Create directory
-                        jsonDirectory.mkdirs()
-                        writeJSONFile(result.value)
-                    }
+                    writeJSONFile(result.value)
+                    parseJsonToObject(readJSONFile("jsonData"))
                 }
             }
         }
     }
 
-    private fun initializeJSONObject(jsonString: String) {
+    private fun parseJsonToObject(jsonString: String) {
         userData = Klaxon().parse<UserDataModel.UserHeader>(jsonString)
+
+        adapter = RecyclerAdapter(userData!!.data)
+        recyclerView.adapter = adapter
     }
 
     private fun writeJSONFile(data: String) {
@@ -109,7 +109,7 @@ class MainView : AppCompatActivity() {
         }
     }
 
-    private fun readJSONFile(filename: String): String{
+    private fun readJSONFile(filename: String): String {
         val filenamePath = File(jsonDirectory.path, "/" + filename + ".json")
         return FileInputStream(filenamePath).bufferedReader().use { it.readText() }
     }
